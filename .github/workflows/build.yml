@@ -3,12 +3,8 @@ name: Build
 on:
   push:
     branches: [main, feat/linux-support]
-    tags: ['v*']
   pull_request:
     branches: [main]
-
-permissions:
-  contents: write
 
 jobs:
   build:
@@ -17,9 +13,7 @@ jobs:
       matrix:
         include:
           - platform: windows-latest
-            target: x86_64-pc-windows-msvc
           - platform: ubuntu-22.04
-            target: x86_64-unknown-linux-gnu
 
     runs-on: ${{ matrix.platform }}
 
@@ -47,8 +41,6 @@ jobs:
 
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.target }}
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
@@ -61,29 +53,10 @@ jobs:
       - name: Update Rust dependencies
         run: cd src-tauri && cargo update
 
-      # On tag pushes, build + create GitHub release
-      - name: Build and release
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tagName: ${{ github.ref_name }}
-          releaseName: ${{ github.ref_name }}
-          releaseBody: 'See the assets below for download links.'
-          releaseDraft: true
-          prerelease: false
-
-      # On branch pushes/PRs, just build (no release)
       - name: Build
-        if: "!startsWith(github.ref, 'refs/tags/')"
-        run: |
-          npx tauri build
-        env:
-          TAURI_SIGNING_PRIVATE_KEY: ''
+        run: npx tauri build
 
       - name: Upload artifacts
-        if: "!startsWith(github.ref, 'refs/tags/')"
         uses: actions/upload-artifact@v4
         with:
           name: build-${{ matrix.platform }}
