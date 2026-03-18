@@ -14,8 +14,8 @@ import HomePage from "./views/HomePage.vue"
 import { saveWindowState, StateFlags } from '@tauri-apps/plugin-window-state';
 import { useUIStore } from "./stores/ui"
 import { useCharactersStore } from "./stores/characters"
-import SidebarControls from "./components/Controls/SidebarControls.vue"
-import FloatingControls from "./components/Controls/FloatingControls.vue"
+import SidebarControls from "./components/controls/SidebarControls.vue"
+import FloatingControls from "./components/controls/FloatingControls.vue"
 import WhatsNew from "./components/modals/WhatsNew.vue"
 import { useI18n } from "vue-i18n"
 
